@@ -1,88 +1,29 @@
-version: '3.8'
+version: '3'
 
 services:
-  db:
-    image: mysql:5.7
-    volumes:
-      - db_:/var/lib/mysql
-    restart: always
-    environment:
-      MYSQL_ROOT_PASSWORD: somewordpress
-      MYSQL_DATABASE: wordpress
-      MYSQL_USER: wordpress
-      MYSQL_PASSWORD: wordpress
+   db:
+     image: mysql:5.7
+     ports:
+       - "3307:3306"
+     volumes:
+       - db_data:/var/lib/mysql
+     restart: always
+     environment:
+       MYSQL_ROOT_PASSWORD: somewordpress
+       MYSQL_DATABASE: wordpress
+       MYSQL_USER: wordpress
+       MYSQL_PASSWORD: wordpress
 
-  wordpress:
-    depends_on:
-      - db
-    image: wordpress:latest
-    ports:
-      - "8000:80"
-    restart: always
-    environment:
-      WORDPRESS_DB_HOST: db:3306
-      WORDPRESS_DB_USER: wordpress
-      WORDPRESS_DB_PASSWORD: wordpress
-      WORDPRESS_DB_NAME: wordpress
-
-      WORDPRESS_ADMIN_USER: "Firstname.LastName"
-      WORDPRESS_ADMIN_PASSWORD: "123-Test"
-      WORDPRESS_ADMIN_EMAIL: "admin@example.com"
-      WORDPRESS_TITLE: "SDET Test Site"
-
-      WORDPRESS_AUTH_KEY: "auto-generated-1"
-      WORDPRESS_SECURE_AUTH_KEY: "auto-generated-2"
-      WORDPRESS_LOGGED_IN_KEY: "auto-generated-3"
-      WORDPRESS_NONCE_KEY: "auto-generated-4"
-
-  selenoid:
-    image: aerokube/selenoid:latest-release
-    ports:
-      - "4444:4444"
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    command: ["-conf", "/dev/null", "-disable-docker"]
-    restart: unless-stopped
-
-  tests:
-    image: python:3.10-slim
-    depends_on:
-      - wordpress
-    working_dir: /app
-    volumes:
-      - .:/app
-      - allure-results:/app/allure-results
-    environment:
-      - PYTHONUNBUFFERED=1
-    command: >
-      sh -c "
-        apt-get update && apt-get install -y curl &&
-        pip install -r requirements.txt &&
-        echo 'Ждём готовности WordPress API...' &&
-        while ! curl -sf http://wordpress/wp-json > /dev/null; do
-          sleep 2
-        done &&
-        echo 'Запускаем тесты...' &&
-        pytest tests/ --alluredir=/app/allure-results -v
-      "
-
-  jenkins:
-    image: jenkins/jenkins:lts
-    user: root
-    ports:
-      - "8081:8080"
-    volumes:
-      - jenkins_home:/var/jenkins_home
-      - ./jenkins/init.groovy.d:/var/jenkins_home/init.groovy.d
-      - .:/var/jenkins_home/workspace/SDETjenkins
-      - allure-results:/var/jenkins_home/workspace/SDETjenkins/allure-results
-    depends_on:
-      - tests
-    environment:
-      JAVA_OPTS: "-Djenkins.install.runSetupWizard=false"
-    restart: unless-stopped
-
+   wordpress:
+     depends_on:
+       - db
+     image: wordpress:latest
+     ports:
+       - "8000:80"
+     restart: always
+     environment:
+       WORDPRESS_DB_HOST: db:3306
+       WORDPRESS_DB_USER: wordpress
+       WORDPRESS_DB_PASSWORD: wordpress
 volumes:
-  db_:
-  jenkins_home:
-  allure-results:
+    db_data:

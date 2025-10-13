@@ -1,8 +1,11 @@
 comment_data = {
-    "post": 20,
-    "content": "Тестовый комментарий"
+    "post": "created_post['id']",
+    "author_name": "TestAuthor",
+    "author_email": "test@example.com",
+    "content": "Тестовый комментарий",
+    "status": "approve"
 }
 
 updated_comment_data = {
-    "content": "Измененный текст комментария"
+    "content": "Обновленный комментарий"
 }
