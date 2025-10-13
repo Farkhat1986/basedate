@@ -1,4 +1,4 @@
-from config.sett import BASE_URL, API_PREFIX, AUTH, HEADERS
+from config.settings import BASE_URL, API_PREFIX, AUTH, HEADERS
 from api.base import BaseApi
 
 class CommentsApi(BaseApi):
