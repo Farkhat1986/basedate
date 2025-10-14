@@ -73,7 +73,7 @@ python run_tests.py
 1. Отправить GET запрос на http://localhost:8000/wp-json/wp/v2/comments/{comment_id}
 
 **Ожидаемый результат:** 
-* Статус 200 created
+* Статус 200 ок
 * В теле ответа:
 	- id - {comment_id}, 
 	- post = ID поста, 
@@ -91,7 +91,7 @@ python run_tests.py
 1. Отправить GET запрос на http://localhost:8000/wp-json/wp/v2/comments
 
 **Ожидаемый результат:**
-* Статус 200 created
+* Статус 200 ок
 * В теле ответа:
 	* Массив из нескольких объектов
 	* Каждый объект содержит:
@@ -117,7 +117,7 @@ python run_tests.py
 	}
 ```
 **Ожидаемый результат:**
-* Статус 200 created
+* Статус 200 ок
 * В теле ответа:
 	* content.rendered = "Измененный текст комментария"
 	* В БД в wp_comments поле comment_content обновлен comment_ID = {comment_id}
@@ -134,7 +134,7 @@ python run_tests.py
 2. Указать в заголовках Basic-Auth с логином и паролем ("Firstname.LastName", "123-Test")
 
 **Ожидаемый результат:**
-* Статус 200 created
+* Статус 200 ок
 * В теле ответа:
 	* status = "trash"
 	* В БД в wp_comments запись с comment_ID = comment_id имеет comment_approved = 'trash'

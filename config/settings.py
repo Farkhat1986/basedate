@@ -1,3 +1,12 @@
+"""
+Конфигурация для интеграционных тестов WordPress REST API.
+
+Загружает настройки из .env, формирует базовые параметры подключения
+и определяет ожидаемые HTTP-статусы с использованием http.HTTPStatus
+для избежания "магических" чисел в тестах.
+"""
+
+from http import HTTPStatus
 import os
 import base64
 from dotenv import load_dotenv
@@ -20,10 +29,10 @@ HEADERS = {
 
 TEST_CONFIGURATION = {
     "TIME_OUT": 10,
-    "STATUS_CODE": 200,
-    "STATUS_CODE_FIRST": 201,
-    "STATUS_CODE_NOT_FOUND": 404,
-    "STATUS_CODE_UNAUTHORIZED": 401,
-    "STATUS_CODE_ACCEPTED": 202,
-    "STATUS_CODE_NO_CONTENT": 204,
+    "STATUS_CODE": HTTPStatus.OK,
+    "STATUS_CODE_FIRST": HTTPStatus.CREATED,
+    "STATUS_CODE_NOT_FOUND": HTTPStatus.NOT_FOUND,
+    "STATUS_CODE_UNAUTHORIZED": HTTPStatus.UNAUTHORIZED,
+    "STATUS_CODE_ACCEPTED": HTTPStatus.ACCEPTED,
+    "STATUS_CODE_NO_CONTENT": HTTPStatus.NO_CONTENT
 }

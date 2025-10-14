@@ -1,0 +1,121 @@
+# Тестирование WordPress API (CRUD операции)
+
+Этот репозиторий содержит автотесты для проверки CRUD операций с использованием WordPress REST API. В нем представлены тесты для работы с постами и комментариями через API, а также инструкции по запуску и настройке тестов.
+
+## Структура репозитория
+
+- **tests/** — Тесты API (posts, comments)
+- **api/** — Классы для работы с WordPress API
+- **db/** — Подключение и проверки БД
+- **data/** — Тестовые данные
+- **docs/** — Подробные описания тестов
+- **config/** — Конфигурационные файлы
+- **run_tests.py** — Скрипт запуска тестов и Allure отчёта
+
+## Документация по тестам
+
+- [Тестирование WordPress Comments API (CRUD операции)](docs/README%20test_comments.md)
+- [Тестирование WordPress Posts API (CRUD операции)](docs/README%20test_posts.md)
+
+## Быстрый старт
+
+### Установка и запуск
+
+1. **Клонировать репозиторий:**
+
+    ```bash
+    git clone https://github.com/Farkhat1986/basedate.git
+    cd basedate
+    ```
+
+2. **Создать и активировать виртуальное окружение:**
+
+    Для Windows:
+
+    ```bash
+    python -m venv venv
+    venv\Scripts\activate
+    ```
+
+    Для Linux/Mac:
+
+    ```bash
+    python -m venv venv
+    source venv/bin/activate
+    ```
+
+3. **Установить зависимости:**
+
+    ```bash
+    pip install -r requirements.txt
+    ```
+
+4. **Запустить контейнеры Docker с MySQL и Apache сервером с предустановленным WordPress:**
+
+    ```bash
+    docker-compose up
+    ```
+
+    Убедитесь, что контейнеры запущены и WordPress доступен по адресу:
+http://localhost:8000
+
+5. **Запуск тестов:**
+
+    После настройки среды выполните тесты с помощью команды:
+
+    ```bash
+    python run_tests.py
+    ```
+
+## Описание тестов
+
+### Тестирование WordPress Comments API
+
+Документация по тестированию CRUD операций с комментариями доступна по следующей ссылке:
+
+[Тестирование WordPress Comments API (CRUD операции)](docs/README%20test_comments.md)
+
+### Тестирование WordPress Posts API
+
+Документация по тестированию CRUD операций с постами доступна по следующей ссылке:
+
+[Тестирование WordPress Posts API (CRUD операции)](docs/README%20test_posts.md)
+
+## Структура тестов
+
+1. **Тесты для комментариев**:
+    - Создание комментария
+    - Получение комментария по ID
+    - Получение списка всех комментариев
+    - Обновление комментария
+    - Удаление комментария
+
+2. **Тесты для постов**:
+    - Создание поста
+    - Получение поста по ID
+    - Получение списка всех постов
+    - Обновление поста
+    - Удаление поста
+
+## Используемые технологии
+
+- **Python 3.10+** — Язык тестирования
+- **Pytest** — Фреймворк для тестов
+- **Allure** — Отчетность 
+- **Requests** — HTTP-запросы к WordPress API
+- **SQLAlchemy** — Проверки в базе данных
+- **Docker + Docker Compose** — Среда (WordPress + MySQL)
+
+## Работа с Allure отчетами
+
+## Генерация отчета вручную
+
+```commandline
+allure generate allure-results -o allure-report --clean
+```
+
+## Запуск локального сервера отчёта
+
+```commandline
+allure serve allure-results
+```
