@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 """
 Скрипт для запуска автоматизированных тестов и генерации отчёта Allure
 
@@ -33,6 +34,15 @@ def run_tests():
     При падении тестов — завершает выполнение с кодом ошибки
     """
     logger.info("Запуск тестов")
+=======
+import subprocess
+import sys
+import webbrowser
+
+def run_tests():
+    # Запускает pytest и формирует allure-results
+    print("Запуск тестов")
+>>>>>>> origin/d1_add_autotests_for_wp
     result = subprocess.run(
         [sys.executable, "-m", "pytest", "--maxfail=1", "--disable-warnings", "--alluredir=allure-results"],
         stdout=subprocess.PIPE,
@@ -40,6 +50,7 @@ def run_tests():
     )
 
     # Вывод логов
+<<<<<<< HEAD
     logger.info(result.stdout.decode())
     logger.error(result.stderr.decode())
 
@@ -61,11 +72,31 @@ def generate_allure_report():
     """
     # Генерация Allure отчёта и запуск сервера на localhost
     logger.info("Генерация отчёта Allure")
+=======
+    print(result.stdout.decode())
+    print(result.stderr.decode())
+
+    # Проверяем код возврата
+    if result.returncode == 0:
+        print("Тесты прошли успешно")
+        generate_allure_report()
+    else:
+        print("Тесты не прошли")
+        sys.exit(result.returncode)
+
+def generate_allure_report():
+    # Генерирует Allure отчёт и запускает сервер на localhost port можно проставить самостоятельно
+    print("Генерация отчёта Allure")
+>>>>>>> origin/d1_add_autotests_for_wp
     subprocess.run(["allure", "generate", "allure-results", "-o", "allure-report", "--clean"], check=True)
 
     # Запускаем Allure сервер
     port = 8080
+<<<<<<< HEAD
     logger.info(f"Запуск Allure отчёта на http://localhost:{port}")
+=======
+    print(f"Запуск Allure отчёта на http://localhost:{port}")
+>>>>>>> origin/d1_add_autotests_for_wp
 
     # Открываем страницу в браузере
     webbrowser.open(f"http://localhost:{port}")
@@ -74,8 +105,15 @@ def generate_allure_report():
     try:
         subprocess.run(["allure", "serve", "allure-results", "-p", str(port)], check=True)
     except KeyboardInterrupt:
+<<<<<<< HEAD
         logger.info("Сервер остановлен пользователем")
 
 
 if __name__ == "__main__":
     run_tests()
+=======
+        print("\n Сервер остановлен пользователем.")
+
+if __name__ == "__main__":
+    run_tests()
+>>>>>>> origin/d1_add_autotests_for_wp

@@ -1,38 +1,26 @@
-"""
-Конфигурация для интеграционных тестов WordPress REST API.
-
-Загружает настройки из .env, формирует базовые параметры подключения
-и определяет ожидаемые HTTP-статусы с использованием http.HTTPStatus
-для избежания "магических" чисел в тестах.
-"""
-
-from http import HTTPStatus
-import os
 import base64
-from dotenv import load_dotenv
 
-load_dotenv()
+BASE_URL = "http://localhost:8000/wp-json/wp/v2"
+AUTH = ("Firstname.LastName", "123-Test")
+HEADERS = {"Content-Type": "application/json"}
 
-BASE_URL = os.getenv("BASE_URL", "http://localhost:8000")
-API_PREFIX = "/wp-json/wp/v2"
-
-AUTH_USER = os.getenv("WP_USER")
-AUTH_PASS = os.getenv("WP_PASS")
-
-AUTH = (AUTH_USER, AUTH_PASS)
-AUTH_VALUE = base64.b64encode(f"{AUTH_USER}:{AUTH_PASS}".encode()).decode()
-
-HEADERS = {
+url_posts = f"{BASE_URL}/posts"
+url_comments = f"{BASE_URL}/comments"
+auth_value = base64.b64encode(f"{AUTH[0]}:{AUTH[1]}".encode()).decode()
+headers_posts = {
     "Content-Type": "application/json",
-    "Authorization": f"Basic {AUTH_VALUE}"
+    "Authorization": f"Basic {auth_value}"
 }
 
 TEST_CONFIGURATION = {
+    "TEST_POST_ID": 14,
+    "TEST_POST_ID_II": 11,
     "TIME_OUT": 10,
-    "STATUS_CODE": HTTPStatus.OK,
-    "STATUS_CODE_FIRST": HTTPStatus.CREATED,
-    "STATUS_CODE_NOT_FOUND": HTTPStatus.NOT_FOUND,
-    "STATUS_CODE_UNAUTHORIZED": HTTPStatus.UNAUTHORIZED,
-    "STATUS_CODE_ACCEPTED": HTTPStatus.ACCEPTED,
-    "STATUS_CODE_NO_CONTENT": HTTPStatus.NO_CONTENT
+    "STATUS_CODE": 200,
+    "STATUS_CODE_FIRST": 201,
+    "STATUS_CODE_NOT_FOUND": 404,
+    "STATUS_CODE_UNAUTHORIZED": 401,
+    "STATUS_CODE_ACCEPTED": 202,
+    "STATUS_CODE_NO_CONTENT": 204,
+    "TEST_COMMENT_ID": 14
 }
