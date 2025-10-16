@@ -15,6 +15,7 @@ import pytest
 from api.comments import CommentsApi
 from api.posts import PostsApi
 from config.settings import TEST_CONFIGURATION
+from http import HTTPStatus
 
 
 @dataclass
@@ -55,7 +56,7 @@ def created_comment(comments_api, created_post):
     """
     comment_data = CommentData(post=created_post["id"], content="Тестовый комментарий")
     response = comments_api.create(comment_data.__dict__)
-    assert response.status_code == TEST_CONFIGURATION["STATUS_CODE_FIRST"]
+    assert response.status_code == HTTPStatus.CREATED
     comment = response.json()
     yield comment
 
@@ -69,7 +70,7 @@ def created_post(posts_api):
     """
     post_data = PostData(title="Тест пост", content="Содержимое поста", status="publish")
     response = posts_api.create(post_data.__dict__)
-    assert response.status_code == TEST_CONFIGURATION["STATUS_CODE_FIRST"]
+    assert response.status_code == HTTPStatus.CREATED
     post = response.json()
     yield post
 
