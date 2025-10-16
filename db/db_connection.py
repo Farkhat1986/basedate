@@ -1,15 +1,18 @@
 """
-Модуль для прямого доступа к базе данных WordPress
+Модуль для прямого доступа к базе данных WordPress через ORM (SQLAlchemy)
 """
 
-from sqlalchemy import create_engine, text
-from sqlalchemy.orm import sessionmaker
-from contextlib import contextmanager
 import os
 from dotenv import load_dotenv
+from sqlalchemy import create_engine, select
+from sqlalchemy.orm import sessionmaker
+from contextlib import contextmanager
+
+from db.models import Post, Comment
 
 load_dotenv()
 DATABASE_URL = os.getenv("DATABASE_URL")
+
 engine = create_engine(DATABASE_URL)
 Session = sessionmaker(bind=engine)
 
@@ -30,26 +33,17 @@ def get_session():
 
 
 def get_post_from_db(post_id):
-    """
-    Получает пост из таблицы wp_posts по его ID
-    """
+    """Получает пост из таблицы wp_posts по его ID ORM"""
     with get_session() as session:
-        return session.execute(
-            text("SELECT ID, post_title, post_content, post_status, post_type FROM wp_posts WHERE ID = :id"),
-            {"id": post_id}
-        ).fetchone()
+        stmt = select(Post).where(Post.ID == post_id)
+        post = session.execute(stmt).scalar_one_or_none()
+        return post
 
 
 def get_comment_from_db(comment_id):
-    """
-    Получает комментарий из таблицы wp_comments по его ID
-    """
+    """Получает комментарий из таблицы wp_comments по его ID ORM"""
     with get_session() as session:
-        return session.execute(
-            text("""
-                SELECT comment_ID, comment_post_ID, comment_content, comment_author, comment_approved
-                FROM wp_comments
-                WHERE comment_ID = :id
-            """),
-            {"id": comment_id}
-        ).fetchone()
+        stmt = select(Comment).where(Comment.comment_ID == comment_id)
+        comment = session.execute(stmt).scalar_one_or_none()
+        return comment
+
