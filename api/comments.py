@@ -1,5 +1,6 @@
 from api.base import BaseApi
 
+
 class CommentsApi(BaseApi):
     """
     Клиент для работы с комментариями через WordPress REST API (эндпоинт /wp/v2/comments)
@@ -27,10 +28,10 @@ class CommentsApi(BaseApi):
         """
         Обновляет существующий комментарий
         """
-        return self.put(f"comments/{comment_id}", json=data)
+        return self.post(f"comments/{comment_id}", json=data)
 
     def delete(self, comment_id):
         """
         Удаляет комментарий по ID
         """
-        return self.delete(f"comments/{comment_id}")
+        return super().delete(f"comments/{comment_id}")

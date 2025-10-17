@@ -6,9 +6,8 @@
 для избежания "магических" чисел в тестах
 """
 
-from http import HTTPStatus
 import os
-import base64
+
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -19,8 +18,4 @@ API_PREFIX = "/wp-json/wp/v2"
 AUTH_USER = os.getenv("WP_USER")
 AUTH_PASS = os.getenv("WP_PASS")
 
-TEST_CONFIGURATION = {
-    "BASE_URL": BASE_URL,
-    "WP_USER": AUTH_USER,
-    "WP_PASS": AUTH_PASS
-}
+TEST_CONFIGURATION = {"BASE_URL": BASE_URL, "WP_USER": AUTH_USER, "WP_PASS": AUTH_PASS}

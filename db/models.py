@@ -1,4 +1,4 @@
-from sqlalchemy import String, Text, Integer
+from sqlalchemy import Integer, String, Text
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 
@@ -8,6 +8,7 @@ class Base(DeclarativeBase):
 
 class Post(Base):
     """Модель для таблицы wp_posts"""
+
     __tablename__ = "wp_posts"
 
     ID: Mapped[int] = mapped_column(Integer, primary_key=True)
@@ -22,6 +23,7 @@ class Post(Base):
 
 class Comment(Base):
     """Модель для таблицы wp_comments"""
+
     __tablename__ = "wp_comments"
 
     comment_ID: Mapped[int] = mapped_column(Integer, primary_key=True)
@@ -32,4 +34,3 @@ class Comment(Base):
 
     def __repr__(self):
         return f"<Comment {self.comment_ID}: {self.comment_author!r}>"
-

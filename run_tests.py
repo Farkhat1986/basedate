@@ -9,18 +9,17 @@
 Использует логирование для отслеживания хода выполнения и ошибок
 """
 
+import logging
 import subprocess
 import sys
 import webbrowser
-import logging
-
 
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(levelname)s - %(message)s",
     handlers=[
         logging.StreamHandler(sys.stdout),
-    ]
+    ],
 )
 logger = logging.getLogger(__name__)
 
@@ -34,9 +33,16 @@ def run_tests():
     """
     logger.info("Запуск тестов")
     result = subprocess.run(
-        [sys.executable, "-m", "pytest", "--maxfail=1", "--disable-warnings", "--alluredir=allure-results"],
+        [
+            sys.executable,
+            "-m",
+            "pytest",
+            "--maxfail=1",
+            "--disable-warnings",
+            "--alluredir=allure-results",
+        ],
         stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE
+        stderr=subprocess.PIPE,
     )
 
     # Вывод логов
@@ -61,7 +67,10 @@ def generate_allure_report():
     """
     # Генерация Allure отчёта и запуск сервера на localhost
     logger.info("Генерация отчёта Allure")
-    subprocess.run(["allure", "generate", "allure-results", "-o", "allure-report", "--clean"], check=True)
+    subprocess.run(
+        ["allure", "generate", "allure-results", "-o", "allure-report", "--clean"],
+        check=True,
+    )
 
     # Запускаем Allure сервер
     port = 8080
@@ -72,7 +81,9 @@ def generate_allure_report():
 
     # Запускаем сервер
     try:
-        subprocess.run(["allure", "serve", "allure-results", "-p", str(port)], check=True)
+        subprocess.run(
+            ["allure", "serve", "allure-results", "-p", str(port)], check=True
+        )
     except KeyboardInterrupt:
         logger.info("Сервер остановлен пользователем")
 

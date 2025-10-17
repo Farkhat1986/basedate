@@ -13,3 +13,7 @@ ENV/
 .pytest_cache/
 allure-results/
 allure-report/
+.ruff_cache/
+.cache/
+.black/
+.isort.cfg

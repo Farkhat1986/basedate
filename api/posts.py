@@ -28,7 +28,7 @@ class PostsApi(BaseApi):
         """
         Обновляет существующий пост
         """
-        return self.put(f"posts/{post_id}", json=data)
+        return self.post(f"posts/{post_id}", json=data)
 
     def delete_post(self, post_id, force=True):
         """

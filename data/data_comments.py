@@ -3,9 +3,7 @@ comment_data = {
     "author_name": "TestAuthor",
     "author_email": "test@example.com",
     "content": "Тестовый комментарий",
-    "status": "approve"
+    "status": "approve",
 }
 
-updated_comment_data = {
-    "content": "Обновленный комментарий"
-}
+updated_comment_data = {"content": "Обновленный комментарий"}
