@@ -1,4 +1,6 @@
-from sqlalchemy import Integer, String, Text
+from datetime import datetime
+
+from sqlalchemy import DateTime, Integer, String, Text
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 
@@ -16,6 +18,7 @@ class Post(Base):
     post_content: Mapped[str] = mapped_column(Text)
     post_status: Mapped[str] = mapped_column(String(20))
     post_type: Mapped[str] = mapped_column(String(20))
+    post_date: Mapped[datetime] = mapped_column(DateTime)
 
     def __repr__(self):
         return f"<Post {self.ID}: {self.post_title!r}>"

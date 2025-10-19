@@ -13,6 +13,7 @@
 import random
 import string
 from dataclasses import dataclass
+from datetime import datetime, timedelta
 from http import HTTPStatus
 
 import pytest
@@ -20,6 +21,8 @@ import pytest
 from api.comments import CommentsApi
 from api.posts import PostsApi
 from config.settings import TEST_CONFIGURATION
+from db.db_connection import get_session
+from db.models import Comment, Post
 
 
 def random_text(prefix: str, length: int = 8) -> str:
@@ -96,3 +99,84 @@ def created_comment(comments_api, created_post):
     yield comment
 
     comments_api.delete(comment["id"])
+
+
+@pytest.fixture
+def draft_post():
+    """Создаёт черновой пост в БД и удаляет после теста"""
+    with get_session() as session:
+        post = Post(
+            post_title="Черновой пост",
+            post_content="Контент черновика",
+            post_status="draft",
+            post_type="post",
+        )
+        session.add(post)
+        session.flush()
+        post_id = post.ID
+    yield post_id
+    with get_session() as session:
+        db_post = session.get(Post, post_id)
+        if db_post:
+            session.delete(db_post)
+
+
+@pytest.fixture
+def private_post():
+    """Создаёт приватный пост в БД и удаляет после теста"""
+    with get_session() as session:
+        post = Post(
+            post_title="Приватный пост",
+            post_content="Скрытый контент",
+            post_status="private",
+            post_type="post",
+        )
+        session.add(post)
+        session.flush()
+        post_id = post.ID
+    yield post_id
+    with get_session() as session:
+        db_post = session.get(Post, post_id)
+        if db_post:
+            session.delete(db_post)
+
+
+@pytest.fixture
+def future_post():
+    """Создаёт будущий пост в БД и удаляет после теста"""
+    future_date = datetime.utcnow() + timedelta(days=1)
+    with get_session() as session:
+        post = Post(
+            post_title="Будущий пост",
+            post_content="Контент будущего поста",
+            post_status="future",
+            post_type="post",
+        )
+        session.add(post)
+        session.flush()
+        post_id = post.ID
+    yield post_id
+    with get_session() as session:
+        db_post = session.get(Post, post_id)
+        if db_post:
+            session.delete(db_post)
+
+
+@pytest.fixture
+def unapproved_comment():
+    """Создаёт комментарий с comment_approved=0 и удаляет после теста"""
+    with get_session() as session:
+        comment = Comment(
+            comment_post_ID=1,
+            comment_content="Комментарий на модерации",
+            comment_author="TestUser",
+            comment_approved="0",
+        )
+        session.add(comment)
+        session.flush()
+        comment_id = comment.comment_ID
+    yield comment_id
+    with get_session() as session:
+        c = session.get(Comment, comment_id)
+        if c:
+            session.delete(c)
