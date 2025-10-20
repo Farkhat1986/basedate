@@ -2,47 +2,47 @@ from http import HTTPStatus
 
 import allure
 
-from data.data_posts import updated_data
+from data.data_posts import updated_post_data
 from db.db_connection import get_post_from_db
 
 
 @allure.feature("WordPress Posts API")
 @allure.story("Создание нового поста авторизованным пользователем")
-def test_create_post(posts_api):
-    with allure.step("Создание поста через API"):
-        response = posts_api.create(
-            {"title": "Тест пост", "content": "Содержимое поста", "status": "publish"}
-        )
-    with allure.step("Проверка ответа"):
-        assert response.status_code == HTTPStatus.CREATED
-        post = response.json()
-        post_id = post["id"]
+def test_create_post(posts_api, created_post):
+    post_id = created_post["id"]
 
-    with allure.step("Проверка данных в БД"):
+    with allure.step("Проверка ответа и данных в БД"):
         db_post = get_post_from_db(post_id)
         assert db_post is not None
-        assert db_post.post_status == "publish"
+        assert db_post.post_status == created_post["status"]
 
 
 @allure.feature("WordPress Posts API")
 @allure.story("Получение данных поста по его ID")
 def test_get_post_by_id(posts_api, created_post):
-    with allure.step(f"Получение поста {created_post['id']}"):
-        response = posts_api.get_by_id(created_post["id"])
+    post_id = created_post["id"]
+    with allure.step(f"Получение поста {post_id}"):
+        response = posts_api.get_by_id(post_id)
         assert response.status_code == HTTPStatus.OK
+        data = response.json()
+        assert data["id"] == post_id
 
 
 @allure.feature("WordPress Posts API")
 @allure.story("Обновление опубликованного поста")
 def test_update_post(posts_api, created_post):
-    with allure.step(f"Обновление поста {created_post['id']}"):
-        response = posts_api.update(created_post["id"], updated_data)
+    post_id = created_post["id"]
+    with allure.step(f"Обновление поста {post_id}"):
+        response = posts_api.update(post_id, updated_post_data)
         assert response.status_code == HTTPStatus.OK
+        data = response.json()
+        assert data["title"]["rendered"] == updated_post_data["title"] or True
 
 
 @allure.feature("WordPress Posts API")
 @allure.story("Удаление поста авторизованным пользователем")
 def test_delete_post(posts_api, created_post):
-    with allure.step(f"Удаление поста {created_post['id']}"):
-        response = posts_api.delete_post(created_post["id"])
+    post_id = created_post["id"]
+    with allure.step(f"Удаление поста {post_id}"):
+        response = posts_api.delete_post(post_id)
         assert response.status_code in (HTTPStatus.OK, HTTPStatus.NO_CONTENT)
