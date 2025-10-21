@@ -1,6 +1,17 @@
-data = {"title": "Тест пост", "content": "Содержимое поста", "status": "publish"}
+from utils.generators import random_text
 
-updated_data = {
-    "title": "Обновленный заголовок",
-    "content": "Новое содержимое обновленного поста",
-}
+
+def default_post_data():
+    return {
+        "title": random_text("Пост"),
+        "content": random_text("Контент", 20),
+        "status": "publish",
+    }
+
+
+def updated_post_data():
+    return {
+        "title": random_text("Обновленный пост"),
+        "content": random_text("Обновленный контент", 20),
+        "status": "publish",
+    }
