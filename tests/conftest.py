@@ -8,7 +8,7 @@
 - все фикстуры используют учётные данные и базовый URL из конфигурации
 """
 
-from dataclasses import dataclass
+from dataclasses import dataclass, asdict
 from http import HTTPStatus
 
 import pytest
@@ -37,12 +37,33 @@ class CommentData:
     approved: str = "1"
 
 
+@dataclass
+class CreatedPost:
+    """Пост, созданный через WordPress REST API"""
+    id: int
+    title: str
+    content: str
+    status: str
+
+
+@dataclass
+class CreatedComment:
+    """Комментарий, созданный через WordPress REST API"""
+    id: int
+    post_id: int
+    content: str
+    author: str
+    status: str
+
+
 @pytest.fixture(scope="session")
 def posts_api():
     """Клиент для работы с постами (сессионная фикстура)"""
     base_url = TEST_CONFIGURATION["BASE_URL"]
     auth = (TEST_CONFIGURATION["WP_USER"], TEST_CONFIGURATION["WP_PASS"])
-    return PostsApi(base_url, auth=auth)
+    client = PostsApi(base_url, auth=auth)
+    yield client
+    client.close()
 
 
 @pytest.fixture(scope="session")
@@ -50,7 +71,9 @@ def comments_api():
     """Клиент для работы с комментариями"""
     base_url = TEST_CONFIGURATION["BASE_URL"]
     auth = (TEST_CONFIGURATION["WP_USER"], TEST_CONFIGURATION["WP_PASS"])
-    return CommentsApi(base_url, auth=auth)
+    client = CommentsApi(base_url, auth=auth)
+    yield client
+    client.close()
 
 
 @pytest.fixture
@@ -64,13 +87,46 @@ def db_session():
 def created_post(posts_api):
     """Создаёт пост через API с рандомными данными и удаляет после теста"""
     post_data = PostData(
-        title=random_text("Тест пост"), content=random_text("Содержимое поста", 20)
+        title=random_text("Тест пост"),
+        content=random_text("Содержимое поста", 20)
     )
-    response = posts_api.create(post_data.__dict__)
+    response = posts_api.create(asdict(post_data))
     assert response.status_code == HTTPStatus.CREATED
-    post = response.json()
+    raw = response.json()
+
+    post = CreatedPost(
+        id=raw["id"],
+        title=raw["title"]["rendered"],
+        content=raw["content"]["rendered"],
+        status=raw["status"]
+    )
+
     yield post
-    posts_api.delete_post(post["id"])
+    posts_api.delete_post(post.id)
+
+
+@pytest.fixture
+def created_comment(comments_api, created_post):
+    """Создаёт комментарий к существующему посту и удаляет после теста"""
+    response = comments_api.create({
+        "post": created_post.id,
+        "author_name": "TestUser",
+        "content": random_text("Тестовый комментарий", 12),
+        "status": "approve",
+    })
+    assert response.status_code == HTTPStatus.CREATED
+    raw = response.json()
+
+    comment = CreatedComment(
+        id=raw["id"],
+        post_id=raw["post"],
+        content=raw["content"]["rendered"],
+        author=raw["author_name"],
+        status=raw["status"]
+    )
+
+    yield comment
+    comments_api.delete(comment.id)
 
 
 @pytest.fixture
@@ -81,6 +137,7 @@ def draft_post(db_session):
         post_content=random_text("Контент черновика", 20),
         post_status="draft",
         post_type="post",
+        post_author=1
     )
     db_session.add(post)
     db_session.flush()
@@ -117,26 +174,6 @@ def future_post(db_session):
     db_session.flush()
     yield post
     db_session.delete(post)
-
-
-@pytest.fixture
-def created_comment(comments_api, created_post):
-    """Создаёт комментарий к существующему посту и удаляет после теста"""
-    comment_data = CommentData(
-        post_id=created_post["id"], content=random_text("Тестовый комментарий", 12)
-    )
-    response = comments_api.create(
-        {
-            "post": comment_data.post_id,
-            "author_name": comment_data.author,
-            "content": comment_data.content,
-            "status": "approve",
-        }
-    )
-    assert response.status_code == HTTPStatus.CREATED
-    comment = response.json()
-    yield comment
-    comments_api.delete(comment["id"])
 
 
 @pytest.fixture

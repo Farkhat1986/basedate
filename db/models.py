@@ -19,6 +19,7 @@ class Post(Base):
     post_status: Mapped[str] = mapped_column(String(20))
     post_type: Mapped[str] = mapped_column(String(20))
     post_date: Mapped[datetime] = mapped_column(DateTime)
+    post_author: Mapped[int] = mapped_column(Integer, default=1)
 
     def __repr__(self):
         return f"<Post {self.ID}: {self.post_title!r}>"

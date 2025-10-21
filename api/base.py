@@ -53,3 +53,8 @@ class BaseApi:
         return self.session.delete(
             self._build_url(endpoint), timeout=self.timeout, **kwargs
         )
+
+    def close(self):
+        """Закрывает HTTP-сессию и освобождает ресурсы"""
+        if hasattr(self, 'session') and self.session:
+            self.session.close()
